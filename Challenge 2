@@ -1,0 +1,91 @@
+Sub StockInfo()
+
+    For Each ws In Worksheets
+      
+    ' Create a for loop for the ticker symbol
+
+    'Set an initial variable for holding the ticker name
+    Dim Stock As String
+    'Set an initial variable for holding the early change from the opening price at the beginning of a given year to the closing price at the end of that year.
+    Dim Stock_Change As Double
+    Stock_Change = 0
+    Dim Percent_Change As Double
+    Percent_Change = 0
+    Dim Total_Stock_Volume As LongLong
+    Total_Stock_Volume = 0
+    Dim Close_Price As Double
+    Close_Price = 0
+    Dim Open_Price As Double
+    Open_Price = 0
+    Dim GIncrease As Double
+    GIncrease = 0
+    Dim GDecrease As Double
+    GDecrease = 0
+    Dim GVolIncrease As LongLong
+    GVolIncrease = 0
+    
+    
+    LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+   
+    
+    ' Keep track of the location for each stock ticker in the summary table
+    Dim Summary_Table_Row As Integer
+    Summary_Table_Row = 2
+    
+     'Add labels to the First Column Header of Summary Tab
+        ws.Cells(1, 10).Value = "Ticker"
+        ws.Cells(1, 11).Value = "Yearly Change"
+        ws.Cells(1, 12).Value = "Percent Change"
+        ws.Cells(1, 13).Value = "Total Stock Volume"
+        ws.Cells(3, 20).Value = "Greatest % Increase"
+        ws.Cells(4, 20).Value = "Greatest % Decrease"
+        ws.Cells(5, 20).Value = "Greatest Total Volume Increase"
+    
+    ' Loop through all stock tickers
+    For i = 2 To LastRow
+ 
+   ' Check if we are still within the same ticker/stock, if it is not...
+    If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+
+      ' Set the Stock Ticker
+      Stock_Ticker = ws.Cells(i, 1).Value
+
+      ' Add to the Total_Stock_Volume
+    Total_Stock_Volume = Total_Stock_Volume + ws.Cells(i, 7).Value
+    
+    Start_Price = ws.Cells(2, 3).Value
+    Close_Price = ws.Cells(i, 6).Value
+    Stock_Change = Start_Price - Close_Price
+    Percent_Change = Stock_Change / Start_Price
+    
+    Summary_Table_Row = Summary_Table_Row + 1
+     
+       
+    ' Print the Stock Ticker in the Summary Table
+      ws.Range("J" & Summary_Table_Row).Value = Stock_Ticker
+      ws.Range("K" & Summary_Table_Row).Value = Stock_Change
+      ws.Range("L" & Summary_Table_Row).Value = Percent_Change
+      ws.Range("M" & Summary_Table_Row).Value = Total_Stock_Volume
+     
+
+    Else
+
+      ' Add to the Brand Total
+      Total_Stock_Volume = Total_Stock_Volume + Cells(i, 7).Value
+        
+         Start_Price = ws.Cells(i + 1, 3)
+
+         
+    End If
+     
+    Next i
+       
+    GIncrease = WorksheetFunction.Max(ws.Range("K2:K500000"))
+    GDecrease = WorksheetFunction.Min(ws.Range("K2:K500000"))
+    GVolIncrease = WorksheetFunction.Max(ws.Range("M2:M500000"))
+   
+    ws.Range("U3" & Summary_Table_Row).Value = GIncrease
+    ws.Range("U4" & Summary_Table_Row).Value = GDecrease
+    ws.Range("U5" & Summary_Table_Row).Value = GVolIncrease
+   
+    Next ws
